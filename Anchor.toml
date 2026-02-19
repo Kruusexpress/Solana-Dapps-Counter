@@ -1,0 +1,15 @@
+[build]
+shell = "/bin/bash"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[programs.devnet]
+solana_counter = "CounterProgram11111111111111111111111111111"
+
+[programs.mainnet-beta]
+solana_counter = "CounterProgram11111111111111111111111111111"
+
+[scripts]
+test = "yarn mocha"
