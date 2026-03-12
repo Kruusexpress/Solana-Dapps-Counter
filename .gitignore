@@ -1,27 +1,10 @@
-# Anchor
-target/
-.anchor/
-*.key
+# v0 runtime files
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
 
-# Node
+# Common ignores
 node_modules/
-dist/
-build/
-*.log
-yarn-error.log
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+.next/
+.env*.local
 .DS_Store
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Solana
-.cargo/
