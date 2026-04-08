@@ -10,108 +10,46 @@ import {
   createDecrementInstruction,
   buildTransaction,
 } from "@/lib/counter-program"
-import { Plus, Minus, RotateCcw, Loader2, ArrowUpRight, FlaskConical } from "lucide-react"
+import { Plus, Minus, RotateCcw, Loader2, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TransactionLog, type TxLogEntry } from "@/components/solana/transaction-log"
 
-// --- Demo mode counter (no wallet needed) ---
-function DemoCounter() {
-  const [count, setCount] = useState(0)
-  const [txLogs, setTxLogs] = useState<TxLogEntry[]>([])
-
-  const fakeSig = () =>
-    Array.from({ length: 64 }, () =>
-      "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"[
-        Math.floor(Math.random() * 58)
-      ]
-    ).join("")
-
-  const addLog = (type: TxLogEntry["type"], sig: string) => {
-    const entry: TxLogEntry = { type, signature: sig, status: "confirming", timestamp: Date.now() }
-    setTxLogs((prev) => [entry, ...prev].slice(0, 10))
-    setTimeout(() => {
-      setTxLogs((prev) =>
-        prev.map((l) => (l.signature === sig ? { ...l, status: "confirmed" } : l))
-      )
-    }, 800)
-  }
-
-  const handleIncrement = () => {
-    setCount((c) => c + 1)
-    addLog("increment", fakeSig())
-  }
-
-  const handleDecrement = () => {
-    if (count === 0) return
-    setCount((c) => c - 1)
-    addLog("decrement", fakeSig())
-  }
-
-  const handleReset = () => {
-    setCount(0)
-    addLog("initialize", fakeSig())
-  }
-
+// --- Connect wallet prompt ---
+function ConnectWalletPrompt() {
   return (
-    <div className="flex flex-col gap-6">
-      {/* Demo mode banner */}
-      <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3">
-        <FlaskConical className="h-4 w-4 shrink-0 text-accent" />
-        <div>
-          <p className="text-sm font-medium text-foreground">Demo Mode</p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Connect a Phantom or Solflare wallet (set to Devnet) to use the real on-chain counter.
-          </p>
+    <div className="flex flex-col items-center gap-8 py-16">
+      <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-secondary">
+        <svg viewBox="0 0 397.7 311.7" className="h-12 w-12" fill="none">
+          <path
+            d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"
+            className="fill-primary"
+          />
+          <path
+            d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"
+            className="fill-primary"
+          />
+          <path
+            d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"
+            className="fill-primary"
+          />
+        </svg>
+      </div>
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold text-foreground">Connect Your Wallet</h2>
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground leading-relaxed">
+          Connect a Solana wallet to interact with the on-chain counter program on Devnet.
+        </p>
+      </div>
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-secondary/50 px-6 py-4">
+        <p className="text-xs font-medium text-muted-foreground">Supported wallets</p>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <span>Phantom</span>
+          <span className="text-border">|</span>
+          <span>Solflare</span>
+          <span className="text-border">|</span>
+          <span>Backpack</span>
         </div>
       </div>
-
-      {/* Counter card */}
-      <div className="rounded-xl border border-border bg-card p-8">
-        <div className="flex flex-col items-center gap-6">
-          <p className="text-sm font-medium text-muted-foreground">Current Count</p>
-
-          <div className="relative flex h-36 w-36 items-center justify-center rounded-2xl border border-border bg-secondary">
-            <div className="absolute inset-0 rounded-2xl bg-primary/5" />
-            <span className="relative text-6xl font-bold font-mono text-foreground">
-              {count}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={handleDecrement}
-              disabled={count === 0}
-              variant="outline"
-              size="lg"
-              className="h-12 w-12 rounded-xl border-border p-0"
-            >
-              <Minus className="h-5 w-5" />
-              <span className="sr-only">Decrement counter</span>
-            </Button>
-
-            <Button
-              onClick={handleIncrement}
-              size="lg"
-              className="h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Increment
-            </Button>
-
-            <Button
-              onClick={handleReset}
-              variant="outline"
-              size="lg"
-              className="h-12 w-12 rounded-xl border-border p-0"
-            >
-              <RotateCcw className="h-4 w-4" />
-              <span className="sr-only">Reset counter</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <TransactionLog logs={txLogs} />
     </div>
   )
 }
@@ -289,8 +227,8 @@ function OnChainCounter() {
   )
 }
 
-// --- Root export: switches between demo and on-chain ---
+// --- Root export: shows wallet prompt or on-chain counter ---
 export function CounterDisplay() {
   const { connected } = useWallet()
-  return connected ? <OnChainCounter /> : <DemoCounter />
+  return connected ? <OnChainCounter /> : <ConnectWalletPrompt />
 }
