@@ -16,7 +16,7 @@ my_program = "11111111111111111111111111111111"
 my_program = "11111111111111111111111111111111"
 
 [programs.mainnet]
-my_program = "11111111111111111111111111111111"
+my_program ="FtFZVk1v6XyXbbQKGaAeU9Le6vedhzcPHUrjqnevke"
 
 [registry]
 url = "https://api.apr.dev"
