@@ -1,5 +1,21 @@
 "use client"
 
+// Suppress wallet adapter errors BEFORE any imports
+if (typeof window !== "undefined") {
+  window.addEventListener("unhandledrejection", (event) => {
+    const msg = event.reason?.message || event.reason?.toString?.() || ""
+    if (
+      typeof msg === "string" &&
+      (msg.includes("mobile wallet protocol") ||
+        msg.includes("WalletConnectionError") ||
+        msg.includes("WalletNotReadyError") ||
+        msg.includes("WalletNotFoundError"))
+    ) {
+      event.preventDefault()
+    }
+  })
+}
+
 import { WalletProvider } from "@/components/solana/wallet-provider"
 import { Header } from "@/components/solana/header"
 import { CounterDisplay } from "@/components/solana/counter-display"

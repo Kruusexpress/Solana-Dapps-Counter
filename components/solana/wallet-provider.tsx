@@ -23,13 +23,20 @@ import {
 } from "@solana/wallet-adapter-react"
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
 import { type WalletError } from "@solana/wallet-adapter-base"
+import {
+  PhantomWalletAdapter,
+  SolflareWalletAdapter,
+} from "@solana/wallet-adapter-wallets"
 import { clusterApiUrl } from "@solana/web3.js"
 
 import "@solana/wallet-adapter-react-ui/styles.css"
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const endpoint = useMemo(() => clusterApiUrl("devnet"), [])
-  const wallets = useMemo(() => [], [])
+  const wallets = useMemo(
+    () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
+    []
+  )
 
   const onError = useCallback((error: WalletError) => {
     console.warn("Wallet error:", error.message)
